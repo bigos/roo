@@ -66,6 +66,12 @@ module Roo
       # accessing table rows in the first tab - not tested yet
       # pp doc.css('table|table')[0].css('table|table-row')[12]
 
+      # accessing thisrd visible column, hidden column is ignored
+      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[2]
+
+      # accessing text split over several nodes
+      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect(&:children)
+
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         byebug
         1==1
