@@ -19,7 +19,9 @@ module Roo
     # values for packed: :zip
     def initialize(filename, options = {})
 
-      raise "going to debug out of desperation"
+      # raise "going to debug out of desperation"
+      byebug
+      7==7
 
       packed       = options[:packed]
       file_warning = options[:file_warning] || :error
