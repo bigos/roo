@@ -57,6 +57,15 @@ module Roo
       # accessing third column of row 13
       # pp doc.xpath('//table:table-row')[12].children[2]
 
+      # number of table rows
+      # pp doc.xpath('//table:table-row').size
+
+      # number of worksheet tabs
+      # pp doc.xpath('//table:table').size
+
+      # accessing table rows in the first tab - not tested yet
+      # pp doc.css('table|table')[0].css('table|table-row')[12]
+
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         byebug
         1==1
