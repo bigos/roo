@@ -72,6 +72,9 @@ module Roo
       # accessing text split over several nodes
       # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect(&:children)
 
+      # the best!!!
+      # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
+
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         byebug
         1==1
