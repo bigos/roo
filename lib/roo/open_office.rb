@@ -18,6 +18,9 @@ module Roo
     # initialization and opening of a spreadsheet file
     # values for packed: :zip
     def initialize(filename, options = {})
+
+      raise "going to debug out of desperation"
+
       packed       = options[:packed]
       file_warning = options[:file_warning] || :error
 
