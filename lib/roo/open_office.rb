@@ -20,8 +20,6 @@ module Roo
     def initialize(filename, options = {})
 
       # raise "going to debug out of desperation"
-      byebug
-      7==7
 
       packed       = options[:packed]
       file_warning = options[:file_warning] || :error
@@ -46,7 +44,23 @@ module Roo
         end
       end
 
+      # accessing elements with xpath
+      # pp doc.xpath('/office:document-content/office:body/office:spreadsheet/table:table/table:table-column')[3]
+
+      # accessing elements using children
+      # pp doc.children[0].children[3].children[0].children[1].children[2]
+
+
+      # objects in spreadshet row 13
+      # pp doc.xpath('//table:table-row')[12]
+
+      # accessing third column of row 13
+      # pp doc.xpath('//table:table-row')[12].children[2]
+
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
+        byebug
+        1==1
+
         if !@only_visible_sheets || @table_display[attribute(sheet, 'style-name')]
           sheet.attributes['name'].value
         end
