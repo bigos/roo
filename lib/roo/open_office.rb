@@ -500,6 +500,10 @@ module Roo
         sheet_found = true
         col         = 1
         row         = 1
+
+        byebug
+        777=777
+
         ws.children.each do |table_element|
           case table_element.name
           when 'table-column'
