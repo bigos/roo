@@ -94,9 +94,6 @@ module Roo
 
         roo_content_xml_path = ::File.join(@tmpdir, 'roo_content.xml')
 
-        byebug
-        3==3
-
         content_entry.extract(roo_content_xml_path)
         decrypt_if_necessary(zip_file, content_entry, roo_content_xml_path, options)
       end
@@ -573,6 +570,10 @@ module Roo
             when 'boolean'
               v = attribute(cell, 'boolean-value').to_s
             end
+
+            byebug
+            888==888
+
             if skip_col
               if !v.nil? || cell.attributes['date-value']
                 0.upto(skip_col.to_i - 1) do |i|
