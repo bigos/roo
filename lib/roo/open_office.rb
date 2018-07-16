@@ -502,7 +502,7 @@ module Roo
         row         = 1
 
         byebug
-        777=777
+        777==777
 
         ws.children.each do |table_element|
           case table_element.name
