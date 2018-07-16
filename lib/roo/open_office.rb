@@ -452,8 +452,11 @@ module Roo
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
 
-      @cell_spanning[sheet] ||= {}
-      @cell_spanning[sheet][key] = spanning if spanning
+      if spanning
+        @cell_spanning[sheet] ||= {} # ensure we have hash
+        @cell_spanning[sheet][key] = spanning
+      end
+
       @formula[sheet] ||= {}
       if formula
         ['of:', 'oooc:'].each do |prefix|
