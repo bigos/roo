@@ -444,6 +444,7 @@ module Roo
       key = [y, x + i]
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
+      @cell_spanning[sheet][key] = spanning if spanning
       @formula[sheet] ||= {}
       if formula
         ['of:', 'oooc:'].each do |prefix|
@@ -456,7 +457,6 @@ module Roo
       @cell[sheet] ||= {}
       @style[sheet] ||= {}
       @style[sheet][key] = style_name
-      @spanning[sheet][key] = spanning
       case @cell_type[sheet][key]
       when :float
         @cell[sheet][key] = (table_cell.attributes['value'].to_s.include?(".") || table_cell.children.first.text.include?(".")) ? v.to_f : v.to_i
@@ -581,12 +581,12 @@ module Roo
             if skip_col
               if !v.nil? || cell.attributes['date-value']
                 0.upto(skip_col.to_i - 1) do |i|
-                  set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name)
+                  set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name, spanning)
                 end
               end
               col += (skip_col.to_i - 1)
             end # if skip
-            set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name)
+            set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name, spanning)
             col += 1
           end
           row += 1

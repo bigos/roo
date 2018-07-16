@@ -42,6 +42,7 @@ class Roo::Base
 
     @cell = {}
     @cell_type = {}
+    @cell_spanning = {}
     @cells_read = {}
 
     @first_row = {}
