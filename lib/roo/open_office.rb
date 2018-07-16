@@ -504,10 +504,22 @@ module Roo
         byebug
         777==777
 
+        # ws.css('table|table-column')
+
+        # ws.css('table|table-column')[1]
+
+        ws.css('table|table-column').each do |table_element|
+          @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
+        end
+
+        ws.css('table|table-row').each do |table_element|
+
+        end
+
+
         ws.children.each do |table_element|
           case table_element.name
-          when 'table-column'
-            @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
+
           when 'table-row'
             if table_element.attributes['number-rows-repeated']
               skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
