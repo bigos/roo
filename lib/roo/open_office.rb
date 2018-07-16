@@ -501,104 +501,93 @@ module Roo
         col         = 1
         row         = 1
 
-        byebug
-        777==777
-
-        # ws.css('table|table-column')
-
-        # ws.css('table|table-column')[1]
 
         ws.css('table|table-column').each do |table_element|
           @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
         end
 
         ws.css('table|table-row').each do |table_element|
+          # byebug
+          # 555==555
 
-        end
-
-
-        ws.children.each do |table_element|
-          case table_element.name
-
-          when 'table-row'
-            if table_element.attributes['number-rows-repeated']
-              skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
-              row      = row + skip_row - 1
-            end
-            table_element.children.each do |cell|
-              skip_col   = attribute(cell, 'number-columns-repeated')
-              formula    = attribute(cell, 'formula')
-              value_type = attribute(cell, 'value-type')
-              v          = attribute(cell, 'value')
-              style_name = attribute(cell, 'style-name')
-              case value_type
-              when 'string'
-                str_v      = ''
-                # insert \n if there is more than one paragraph
-                para_count = 0
-                cell.children.each do |str|
-                  # begin comments
-                  #=begin
-                  #- <table:table-cell office:value-type="string">
-                  #  - <office:annotation office:display="true" draw:style-name="gr1" draw:text-style-name="P1" svg:width="1.1413in" svg:height="0.3902in" svg:x="2.0142in" svg:y="0in" draw:caption-point-x="-0.2402in" draw:caption-point-y="0.5661in">
-                  #      <dc:date>2011-09-20T00:00:00</dc:date>
-                  #      <text:p text:style-name="P1">Kommentar fuer B4</text:p>
-                  #    </office:annotation>
-                  #    <text:p>B4 (mit Kommentar)</text:p>
-                  #  </table:table-cell>
-                  #=end
-                  if str.name == 'annotation'
-                    str.children.each do |annotation|
-                      next unless annotation.name == 'p'
-                      # @comment ist ein Hash mit Sheet als Key (wie bei @cell)
-                      # innerhalb eines Elements besteht ein Eintrag aus einem
-                      # weiteren Hash mit Key [row,col] und dem eigentlichen
-                      # Kommentartext als Inhalt
-                      @comment[sheet]      = Hash.new unless @comment[sheet]
-                      key                  = [row, col]
-                      @comment[sheet][key] = annotation.text
-                    end
-                  end
-                  # end comments
-                  if str.name == 'p'
-                    v          = str.content
-                    str_v      += "\n" if para_count > 0
-                    para_count += 1
-                    if str.children.size > 1
-                      str_v += children_to_string(str.children)
-                    else
-                      str.children.each do |child|
-                        str_v += child.content #.text
-                      end
-                    end
-                    str_v.gsub!(/&apos;/, "'") # special case not supported by unescapeHTML
-                    str_v = CGI.unescapeHTML(str_v)
-                  end # == 'p'
-                end
-              when 'time'
-                cell.children.each do |str|
-                  v = str.content if str.name == 'p'
-                end
-              when '', nil, 'date', 'percentage', 'float'
-                #
-              when 'boolean'
-                v = attribute(cell, 'boolean-value').to_s
-              end
-              if skip_col
-                if !v.nil? || cell.attributes['date-value']
-                  0.upto(skip_col.to_i - 1) do |i|
-                    set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name)
-                  end
-                end
-                col += (skip_col.to_i - 1)
-              end # if skip
-              set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name)
-              col += 1
-            end
-            row += 1
-            col = 1
+          if table_element.attributes['number-rows-repeated']
+            skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
+            row      = row + skip_row - 1
           end
+          table_element.children.each do |cell|
+            skip_col   = attribute(cell, 'number-columns-repeated')
+            formula    = attribute(cell, 'formula')
+            value_type = attribute(cell, 'value-type')
+            v          = attribute(cell, 'value')
+            style_name = attribute(cell, 'style-name')
+            case value_type
+            when 'string'
+              str_v      = ''
+              # insert \n if there is more than one paragraph
+              para_count = 0
+              cell.children.each do |str|
+                # begin comments
+                #=begin
+                #- <table:table-cell office:value-type="string">
+                #  - <office:annotation office:display="true" draw:style-name="gr1" draw:text-style-name="P1" svg:width="1.1413in" svg:height="0.3902in" svg:x="2.0142in" svg:y="0in" draw:caption-point-x="-0.2402in" draw:caption-point-y="0.5661in">
+                #      <dc:date>2011-09-20T00:00:00</dc:date>
+                #      <text:p text:style-name="P1">Kommentar fuer B4</text:p>
+                #    </office:annotation>
+                #    <text:p>B4 (mit Kommentar)</text:p>
+                #  </table:table-cell>
+                #=end
+                if str.name == 'annotation'
+                  str.children.each do |annotation|
+                    next unless annotation.name == 'p'
+                    # @comment ist ein Hash mit Sheet als Key (wie bei @cell)
+                    # innerhalb eines Elements besteht ein Eintrag aus einem
+                    # weiteren Hash mit Key [row,col] und dem eigentlichen
+                    # Kommentartext als Inhalt
+                    @comment[sheet]      = Hash.new unless @comment[sheet]
+                    key                  = [row, col]
+                    @comment[sheet][key] = annotation.text
+                  end
+                end
+                # end comments
+                if str.name == 'p'
+                  v          = str.content
+                  str_v      += "\n" if para_count > 0
+                  para_count += 1
+                  if str.children.size > 1
+                    str_v += children_to_string(str.children)
+                  else
+                    str.children.each do |child|
+                      str_v += child.content #.text
+                    end
+                  end
+                  str_v.gsub!(/&apos;/, "'") # special case not supported by unescapeHTML
+                  str_v = CGI.unescapeHTML(str_v)
+                end # == 'p'
+              end
+            when 'time'
+              cell.children.each do |str|
+                v = str.content if str.name == 'p'
+              end
+            when '', nil, 'date', 'percentage', 'float'
+            #
+            when 'boolean'
+              v = attribute(cell, 'boolean-value').to_s
+            end
+            if skip_col
+              if !v.nil? || cell.attributes['date-value']
+                0.upto(skip_col.to_i - 1) do |i|
+                  set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name)
+                end
+              end
+              col += (skip_col.to_i - 1)
+            end # if skip
+            set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name)
+            col += 1
+          end
+          row += 1
+          col = 1
         end
+
       end
       doc.xpath("//*[local-name()='automatic-styles']").each do |style|
         read_styles(style)
