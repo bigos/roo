@@ -574,9 +574,6 @@ module Roo
               v = attribute(cell, 'boolean-value').to_s
             end
 
-            byebug
-            888==888
-
             spanned_attributes = cell.attributes.keys.reject { |x| x.index('spanned').nil? }
             spanning = spanned_attributes.collect{|sa| [sa,cell.attributes[sa].value]}.to_h
 
