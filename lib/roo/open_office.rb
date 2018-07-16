@@ -516,11 +516,11 @@ module Roo
         col         = 1
         row         = 1
 
-
         ws.css('table|table-column').each do |table_element|
           @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
         end
 
+        # table-row elements are not always children of table
         ws.css('table|table-row').each do |table_element|
           if table_element.attributes['number-rows-repeated']
             skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
