@@ -76,7 +76,7 @@ module Roo
       # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
 
       # accessing colspannings ===================================
-
+      # aaa = OpenSheet.new OpenSheet.test_file
       # aaa.workbook.sheets
       # aaa.workbook.default_sheet = "Chain of Custody"
       # aaa.workbook.entries
@@ -452,7 +452,7 @@ module Roo
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
 
-      if spanning
+      unless spanning.blank?
         @cell_spanning[sheet] ||= {} # ensure we have hash
         @cell_spanning[sheet][key] = spanning
       end
