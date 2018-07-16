@@ -75,6 +75,13 @@ module Roo
       # the best!!!
       # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
 
+      # accessing colspannings ===================================
+
+      # aaa.workbook.sheets
+      # aaa.workbook.default_sheet = "Chain of Custody"
+      # aaa.workbook.entries
+      # aaa.workbook.cell_spanning['Chain of Custody'].assoc([1,3])
+
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         if !@only_visible_sheets || @table_display[attribute(sheet, 'style-name')]
           sheet.attributes['name'].value
