@@ -574,6 +574,9 @@ module Roo
             byebug
             888==888
 
+            spanned_attributes = cell.attributes.keys.reject { |x| x.index('spanned').nil? }
+            spanning = spanned_attributes.collect{|sa| [sa,cell.attributes[sa].value]}.to_h
+
             if skip_col
               if !v.nil? || cell.attributes['date-value']
                 0.upto(skip_col.to_i - 1) do |i|
