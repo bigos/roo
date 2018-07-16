@@ -453,6 +453,8 @@ module Roo
       @cell_type[sheet][key] = value_type.to_sym if value_type
 
       unless spanning.blank?
+        byebug
+        444==444
         @cell_spanning[sheet] ||= {} # ensure we have hash
         if spanning.key?('number-columns-spanned')
           @cell_spanning[sheet][key][:columns] = spanning['number-columns-spanned']
