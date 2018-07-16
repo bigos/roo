@@ -444,6 +444,9 @@ module Roo
       key = [y, x + i]
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
+      byebug
+      9==9
+
       @cell_spanning[sheet][key] = spanning if spanning
       @formula[sheet] ||= {}
       if formula
