@@ -454,7 +454,12 @@ module Roo
 
       unless spanning.blank?
         @cell_spanning[sheet] ||= {} # ensure we have hash
-        @cell_spanning[sheet][key] = spanning
+        if spanning.key?('number-columns-spanned')
+          @cell_spanning[sheet][key][:columns] = spanning['number-columns-spanned']
+        end
+        if spanning.key?('number-rows-spanned')
+          @cell_spanning[sheet][key][:rows] = spanning['number-rows-spanned']
+        end
       end
 
       @formula[sheet] ||= {}
