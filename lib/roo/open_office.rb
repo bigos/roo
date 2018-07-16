@@ -87,8 +87,6 @@ module Roo
           sheet.attributes['name'].value
         end
       end.compact
-      byebug
-      1==1
     rescue
       self.class.finalize_tempdirs(object_id)
       raise
@@ -524,9 +522,6 @@ module Roo
         end
 
         ws.css('table|table-row').each do |table_element|
-          # byebug
-          # 555==555
-
           if table_element.attributes['number-rows-repeated']
             skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
             row      = row + skip_row - 1
