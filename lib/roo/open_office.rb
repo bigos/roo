@@ -440,7 +440,7 @@ module Roo
     end
 
     # helper function to set the internal representation of cells
-    def set_cell_values(sheet, x, y, i, v, value_type, formula, table_cell, str_v, style_name)
+    def set_cell_values(sheet, x, y, i, v, value_type, formula, table_cell, str_v, style_name, spanning)
       key = [y, x + i]
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
@@ -456,6 +456,7 @@ module Roo
       @cell[sheet] ||= {}
       @style[sheet] ||= {}
       @style[sheet][key] = style_name
+      @spanning[sheet][key] = spanning
       case @cell_type[sheet][key]
       when :float
         @cell[sheet][key] = (table_cell.attributes['value'].to_s.include?(".") || table_cell.children.first.text.include?(".")) ? v.to_f : v.to_i
