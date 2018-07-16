@@ -76,13 +76,12 @@ module Roo
       # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
 
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
-        byebug
-        1==1
-
         if !@only_visible_sheets || @table_display[attribute(sheet, 'style-name')]
           sheet.attributes['name'].value
         end
       end.compact
+      byebug
+      1==1
     rescue
       self.class.finalize_tempdirs(object_id)
       raise
