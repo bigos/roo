@@ -94,6 +94,10 @@ module Roo
         fail ArgumentError, ERROR_MISSING_CONTENT_XML unless content_entry
 
         roo_content_xml_path = ::File.join(@tmpdir, 'roo_content.xml')
+
+        byebug
+        3==3
+
         content_entry.extract(roo_content_xml_path)
         decrypt_if_necessary(zip_file, content_entry, roo_content_xml_path, options)
       end
