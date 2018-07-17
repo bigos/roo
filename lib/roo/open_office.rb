@@ -87,6 +87,8 @@ module Roo
           sheet.attributes['name'].value
         end
       end.compact
+      byebug
+      5==5
     rescue
       self.class.finalize_tempdirs(object_id)
       raise
