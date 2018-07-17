@@ -95,30 +95,7 @@ module Roo
     end
 
     def spannings()
-      byebug
-      3==3
-
-      sheet_index = sheets.find_index default_sheet
-      data = worksheets[sheet_index].merged_cells
-
-      result = {}
-      data.collect do |x|
-        xfrom = x[0]
-        xto =   x[1]
-        yfrom = x[2]
-        yto =   x[3]
-        r = xfrom + 1
-        c = yfrom + 1
-        spanx = xto - xfrom
-        spany = yto - yfrom
-        rows =    spanx + 1
-        columns = spany + 1
-        newhash = { [r, c] => { columns: columns, rows: rows } }
-        result.merge! newhash
-        # byebug if xfrom <= 4
-        result
-      end
-      result
+      @cell_spanning[default_sheet]
     end
 
     def open_oo_file(options)
