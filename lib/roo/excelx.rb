@@ -66,11 +66,12 @@ module Roo
       end.compact
       @sheets = []
       @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
-                               byebug
-                               6==7
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
                              end]
+
+      byebug
+      12==12
 
       if cell_max
         cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
