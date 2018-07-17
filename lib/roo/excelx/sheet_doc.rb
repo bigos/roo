@@ -172,7 +172,6 @@ module Roo
         end.compact]
       end
 
-      # this does not help me because the expansion takes place too early
       def expand_merged_ranges(cells)
         # Extract merged ranges from xml
         merges = {}

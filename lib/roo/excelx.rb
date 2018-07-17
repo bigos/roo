@@ -383,6 +383,8 @@ module Roo
         path = "#{tmpdir}/roo_sheet#{i + 1}"
         sheet_files << path
         @sheet_files << path
+        byebug
+        555==555
         entry.extract(path)
       end
     end
