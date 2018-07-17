@@ -66,6 +66,8 @@ module Roo
       end.compact
       @sheets = []
       @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
+                               byebug
+                               0==0
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
                              end]
