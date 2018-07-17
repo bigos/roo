@@ -431,6 +431,9 @@ module Roo
       extract_sheets_in_order(entries, sheet_ids, sheets, @tmpdir)
       extract_images(entries, @tmpdir)
 
+      byebug
+      444==444
+
       entries.each do |entry|
         path =
         case entry.name.downcase
