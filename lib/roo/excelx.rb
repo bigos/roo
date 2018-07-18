@@ -79,6 +79,9 @@ module Roo
         12==12
 
         doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
+        raw_ranges = doc.xpath('//mergeCells').first.children.collect do |c|
+          c.attributes['ref'].value.split(':')
+        end
 
         byebug
         13==13
