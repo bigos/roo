@@ -284,9 +284,6 @@ class Roo::Base
   def each(options = {})
     return to_enum(:each, options) unless block_given?
 
-    byebug
-    555==555
-
     if options.empty?
       1.upto(last_row) do |line|
         yield row(line)
