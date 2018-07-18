@@ -65,33 +65,29 @@ module Roo
         end
       end.compact
       @sheets = []
+      @spannings = {}
       @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
-                               byebug
-                               0==0
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
                              end]
-
       @sheet_names.map.with_index do |sheet_name, n|
+        spanning_data = {}
+
         sheet_file = @sheet_files[n]
-
-        byebug
-        12==12
-
         doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
-        raw_ranges = doc.xpath('//mergeCells').first.children.collect do |c|
+        doc.xpath('//mergeCells').first.children.collect do |c|
           raw_from, raw_to = c.attributes['ref'].value.split(':')
           from = Roo::Utils.ref_to_key raw_from
           to   = Roo::Utils.ref_to_key raw_to
-          zzz = { from => { columns: to.second - from.second + 1,
-                            rows:    to.first  - from.first  + 1 } }
-          byebug
-          15==15
+          new_element = { from => { columns: to.second - from.second + 1,
+                                    rows:    to.first  - from.first  + 1 } }
+          spanning_data.merge! new_element
         end
-
-        byebug
-        13==13
+        @spannings[sheet_name] = spanning_data
       end
+
+      byebug
+      13==13
 
       if cell_max
         cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
