@@ -83,8 +83,8 @@ module Roo
           raw_from, raw_to = c.attributes['ref'].value.split(':')
           from = Roo::Utils.ref_to_key raw_from
           to   = Roo::Utils.ref_to_key raw_to
-          zzz = { from => { columns: to.second - from.second,
-                            rows:    to.first  - from.first } }
+          zzz = { from => { columns: to.second - from.second + 1,
+                            rows:    to.first  - from.first  + 1 } }
           byebug
           15==15
         end
