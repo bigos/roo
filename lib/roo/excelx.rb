@@ -80,7 +80,9 @@ module Roo
 
         doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
         raw_ranges = doc.xpath('//mergeCells').first.children.collect do |c|
-          c.attributes['ref'].value.split(':')
+          raw_from, raw_to = c.attributes['ref'].value.split(':')
+          from = Roo::Utils.ref_to_key raw_from
+          to   = Roo::Utils.ref_to_key raw_to
         end
 
         byebug
