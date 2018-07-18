@@ -72,8 +72,17 @@ module Roo
                                [sheet_name, @sheets[n]]
                              end]
 
-      byebug
-      12==12
+      @sheet_names.map.with_index do |sheet_name, n|
+        sheet_file = @sheet_files[n]
+
+        byebug
+        12==12
+
+        doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
+
+        byebug
+        13==13
+      end
 
       if cell_max
         cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
