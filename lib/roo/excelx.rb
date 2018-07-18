@@ -70,15 +70,17 @@ module Roo
                                [sheet_name, @sheets[n]]
                              end]
 
+      # read the information about cell spanning
       @spannings = []
-      @sheet_names.map.with_index do |sheet_name, n|
+      @sheet_names.each_index do |n|
         spanning_data = {}
 
         sheet_file = @sheet_files[n]
         doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
-        merge_cells = doc.xpath('//mergeCells').first.children
-        next if merge_cells.blank?
-        merge_cells.collect do |c|
+        merge_cells_container = doc.xpath('//mergeCells').first
+        next if merge_cells_container.blank?
+
+        merge_cells_container.children.collect do |c|
           raw_from, raw_to = c.attributes['ref'].value.split(':')
           from = Roo::Utils.ref_to_key raw_from
           to   = Roo::Utils.ref_to_key raw_to
