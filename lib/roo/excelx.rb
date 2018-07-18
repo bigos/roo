@@ -65,7 +65,7 @@ module Roo
         end
       end.compact
       @sheets = []
-      @spannings = {}
+      @spannings = []
       @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
@@ -83,7 +83,7 @@ module Roo
                                     rows:    to.first  - from.first  + 1 } }
           spanning_data.merge! new_element
         end
-        @spannings[sheet_name] = spanning_data
+        @spannings << spanning_data
       end
 
       byebug
@@ -98,6 +98,11 @@ module Roo
     rescue
       self.class.finalize_tempdirs(object_id)
       raise
+    end
+
+    def spannings()
+      byebug
+      1==1
     end
 
     # spannings from old excel file
