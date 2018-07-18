@@ -76,7 +76,7 @@ module Roo
 
         sheet_file = @sheet_files[n]
         doc = Roo::Utils.load_xml(sheet_file).remove_namespaces!
-        merge_cells doc.xpath('//mergeCells').first.children
+        merge_cells = doc.xpath('//mergeCells').first.children
         next if merge_cells.blank?
         merge_cells.collect do |c|
           raw_from, raw_to = c.attributes['ref'].value.split(':')
