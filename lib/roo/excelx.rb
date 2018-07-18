@@ -65,11 +65,12 @@ module Roo
         end
       end.compact
       @sheets = []
-      @spannings = []
       @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
                              end]
+
+      @spannings = []
       @sheet_names.map.with_index do |sheet_name, n|
         spanning_data = {}
 
@@ -86,9 +87,6 @@ module Roo
         @spannings << spanning_data
       end
 
-      byebug
-      13==13
-
       if cell_max
         cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
         raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
@@ -100,16 +98,11 @@ module Roo
       raise
     end
 
-    def spannings()
-      byebug
-      1==1
-    end
-
-    # spannings from old excel file
-    # aaa = OldExcel.new OldExcel.test_file
+    # console use
     # aaa.workbook.spannings
-    # => {[6, 13]=>{:columns=>1, :rows=>8}, [6, 14]=>{:columns=>1, :rows=>8}, [6, 15]=>{:columns=>1, :rows=>8}, [6, 16]=>{:columns=>1, :rows=>8}, [1, 3]=>{:columns=>16, :rows=>2}, [1, 19]=>{:columns=>1, :rows=>4}, [3, 3]=>{:columns=>16, :rows=>1}, [5, 1]=>{:columns=>6, :rows=>1}, [6, 1]=>{:columns=>6, :rows=>2}, [6, 8]=>{:columns=>1, :rows=>8}, [9, 1]=>{:columns=>2, :rows=>1}, [9, 5]=>{:columns=>2, :rows=>1}, [10, 5]=>{:columns=>2, :rows=>1}, [11, 5]=>{:columns=>2, :rows=>1}, [6, 11]=>{:columns=>1, :rows=>8}, [6, 12]=>{:columns=>1, :rows=>8}, [6, 9]=>{:columns=>1, :rows=>8}, [6, 10]=>{:columns=>1, :rows=>8}, [11, 19]=>{:columns=>1, :rows=>2}, [12, 1]=>{:columns=>5, :rows=>1}, [12, 6]=>{:columns=>1, :rows=>2}, [13, 1]=>{:columns=>2, :rows=>1}, [14, 1]=>{:columns=>2, :rows=>1}, [5, 8]=>{:columns=>11, :rows=>1}, [6, 17]=>{:columns=>1, :rows=>8}, [6, 18]=>{:columns=>1, :rows=>8}, [8, 1]=>{:columns=>2, :rows=>1}, [8, 5]=>{:columns=>2, :rows=>1}, [15, 1]=>{:columns=>2, :rows=>1}, [16, 1]=>{:columns=>2, :rows=>1}, [17, 1]=>{:columns=>2, :rows=>1}, [18, 1]=>{:columns=>2, :rows=>1}, [19, 1]=>{:columns=>2, :rows=>1}, [20, 1]=>{:columns=>2, :rows=>1}, [21, 1]=>{:columns=>2, :rows=>1}, [22, 1]=>{:columns=>2, :rows=>1}, [23, 1]=>{:columns=>2, :rows=>1}, [24, 1]=>{:columns=>2, :rows=>1}, [25, 1]=>{:columns=>2, :rows=>1}, [26, 1]=>{:columns=>2, :rows=>1}, [33, 5]=>{:columns=>3, :rows=>2}, [33, 8]=>{:columns=>3, :rows=>2}, [33, 11]=>{:columns=>2, :rows=>2}, [27, 1]=>{:columns=>2, :rows=>1}, [28, 1]=>{:columns=>2, :rows=>1}, [29, 1]=>{:columns=>2, :rows=>1}, [30, 1]=>{:columns=>2, :rows=>1}, [31, 1]=>{:columns=>2, :rows=>1}, [32, 1]=>{:columns=>2, :rows=>1}, [33, 13]=>{:columns=>2, :rows=>2}, [33, 15]=>{:columns=>4, :rows=>2}, [33, 19]=>{:columns=>1, :rows=>2}, [10, 1]=>{:columns=>3, :rows=>1}, [11, 1]=>{:columns=>3, :rows=>1}, [5, 7]=>{:columns=>1, :rows=>9}, [14, 19]=>{:columns=>1, :rows=>2}, [33, 1]=>{:columns=>2, :rows=>2}, [33, 3]=>{:columns=>1, :rows=>2}, [33, 4]=>{:columns=>1, :rows=>2}}
-
+    def spannings()
+      @spannings[@sheet_names.find_index(@default_sheet)]
+    end
 
     def method_missing(method, *args)
       if (label = workbook.defined_names[method.to_s])
