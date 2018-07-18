@@ -98,8 +98,6 @@ module Roo
       raise
     end
 
-    # console use
-    # aaa.workbook.spannings
     def spannings()
       @spannings[@sheet_names.find_index(@default_sheet)]
     end
@@ -403,8 +401,6 @@ module Roo
         path = "#{tmpdir}/roo_sheet#{i + 1}"
         sheet_files << path
         @sheet_files << path
-        byebug
-        555==555
         entry.extract(path)
       end
     end
@@ -452,9 +448,6 @@ module Roo
       sheets = extract_worksheet_rels(entries, "#{@tmpdir}/roo_workbook.xml.rels")
       extract_sheets_in_order(entries, sheet_ids, sheets, @tmpdir)
       extract_images(entries, @tmpdir)
-
-      byebug
-      444==444
 
       entries.each do |entry|
         path =
