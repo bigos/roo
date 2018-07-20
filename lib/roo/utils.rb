@@ -17,6 +17,9 @@ module Roo
 
     alias_method :ref_to_key, :split_coordinate
 
+    # ind2ref and ref2ind are not used in the gem code, but are handy for the
+    # code that uses it
+
     # copied from https://github.com/weshatheleopard/rubyXL
     # Converts +row+ and +col+ zero-based indices to Excel-style cell reference
     # (0) A...Z, AA...AZ, BA... ...ZZ, AAA... ...AZZ, BAA... ...XFD (16383)
