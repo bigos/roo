@@ -22,7 +22,7 @@ class Roo::Base
   MAX_ROW_COL = 999_999.freeze
   MIN_ROW_COL = 0.freeze
 
-  attr_reader :headers
+  attr_reader :headers, :cell_spanning
 
   # sets the line with attribute names (default: 1)
   attr_accessor :header_line
@@ -42,6 +42,7 @@ class Roo::Base
 
     @cell = {}
     @cell_type = {}
+    @cell_spanning = {}
     @cells_read = {}
 
     @first_row = {}

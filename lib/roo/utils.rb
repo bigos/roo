@@ -8,14 +8,43 @@ module Roo
       @split_coordinate ||= {}
 
       @split_coordinate[str] ||= begin
-        letter, number = split_coord(str)
-        x = letter_to_number(letter)
-        y = number
-        [y, x]
-      end
+                                   letter, number = split_coord(str)
+                                   x = letter_to_number(letter)
+                                   y = number
+                                   [y, x]
+                                 end
     end
 
     alias_method :ref_to_key, :split_coordinate
+
+    # ind2ref and ref2ind are not used in the gem code, but are handy for the
+    # code that uses it
+
+    # copied from https://github.com/weshatheleopard/rubyXL
+    # Converts +row+ and +col+ zero-based indices to Excel-style cell reference
+    # (0) A...Z, AA...AZ, BA... ...ZZ, AAA... ...AZZ, BAA... ...XFD (16383)
+    def ind2ref(row = 0, col = 0)
+      str = ''
+
+      loop do
+        x = col % 26
+        str = ('A'.ord + x).chr + str
+        col = (col / 26).floor - 1
+        break if col < 0
+      end
+
+      str += (row + 1).to_s
+    end
+
+    # copied from https://github.com/weshatheleopard/rubyXL
+    # Converts Excel-style cell reference to +row+ and +col+ zero-based indices.
+    def ref2ind(str)
+      return [ -1, -1 ] unless str =~ /\A([A-Z]+)(\d+)\Z/
+
+      col = 0
+      $1.each_byte { |chr| col = col * 26 + (chr - 64) }
+      [ $2.to_i - 1, col - 1 ]
+    end
 
     def split_coord(s)
       if s =~ /([a-zA-Z]+)([0-9]+)/
@@ -42,13 +71,13 @@ module Roo
     def letter_to_number(letters)
       @letter_to_number ||= {}
       @letter_to_number[letters] ||= begin
-         result = 0
+                                       result = 0
 
-         # :bytes method returns an enumerator in 1.9.3 and an array in 2.0+
-         letters.bytes.to_a.map{|b| b > 96 ? b - 96 : b - 64 }.reverse.each_with_index{ |num, i| result += num * 26 ** i }
+                                       # :bytes method returns an enumerator in 1.9.3 and an array in 2.0+
+                                       letters.bytes.to_a.map{|b| b > 96 ? b - 96 : b - 64 }.reverse.each_with_index{ |num, i| result += num * 26 ** i }
 
-         result
-      end
+                                       result
+                                     end
     end
 
     # Compute upper bound for cells in a given cell range.

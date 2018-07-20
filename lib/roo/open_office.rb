@@ -18,9 +18,6 @@ module Roo
     # initialization and opening of a spreadsheet file
     # values for packed: :zip
     def initialize(filename, options = {})
-
-      # raise "going to debug out of desperation"
-
       packed       = options[:packed]
       file_warning = options[:file_warning] || :error
 
@@ -44,47 +41,18 @@ module Roo
         end
       end
 
-      # accessing elements with xpath
-      # pp doc.xpath('/office:document-content/office:body/office:spreadsheet/table:table/table:table-column')[3]
-
-      # accessing elements using children
-      # pp doc.children[0].children[3].children[0].children[1].children[2]
-
-
-      # objects in spreadshet row 13
-      # pp doc.xpath('//table:table-row')[12]
-
-      # accessing third column of row 13
-      # pp doc.xpath('//table:table-row')[12].children[2]
-
-      # number of table rows
-      # pp doc.xpath('//table:table-row').size
-
-      # number of worksheet tabs
-      # pp doc.xpath('//table:table').size
-
-      # accessing table rows in the first tab - not tested yet
-      # pp doc.css('table|table')[0].css('table|table-row')[12]
-
-      # accessing thisrd visible column, hidden column is ignored
-      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[2]
-
-      # accessing text split over several nodes
-      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect(&:children)
-
-      # the best!!!
-      # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
-
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         if !@only_visible_sheets || @table_display[attribute(sheet, 'style-name')]
           sheet.attributes['name'].value
         end
       end.compact
-      byebug
-      1==1
     rescue
       self.class.finalize_tempdirs(object_id)
       raise
+    end
+
+    def spannings()
+      @cell_spanning[default_sheet]
     end
 
     def open_oo_file(options)
@@ -93,9 +61,6 @@ module Roo
         fail ArgumentError, ERROR_MISSING_CONTENT_XML unless content_entry
 
         roo_content_xml_path = ::File.join(@tmpdir, 'roo_content.xml')
-
-        byebug
-        3==3
 
         content_entry.extract(roo_content_xml_path)
         decrypt_if_necessary(zip_file, content_entry, roo_content_xml_path, options)
@@ -443,10 +408,23 @@ module Roo
     end
 
     # helper function to set the internal representation of cells
-    def set_cell_values(sheet, x, y, i, v, value_type, formula, table_cell, str_v, style_name)
+    def set_cell_values(sheet, x, y, i, v, value_type, formula, table_cell, str_v, style_name, spanning)
       key = [y, x + i]
       @cell_type[sheet] ||= {}
       @cell_type[sheet][key] = value_type.to_sym if value_type
+
+      unless spanning.blank?
+        @cell_spanning[sheet] ||= {} # ensure we have hash
+        if spanning.key?('number-columns-spanned')
+          @cell_spanning[sheet][key] ||= {}
+          @cell_spanning[sheet][key][:columns] = spanning['number-columns-spanned']
+        end
+        if spanning.key?('number-rows-spanned')
+          @cell_spanning[sheet][key] ||= {}
+          @cell_spanning[sheet][key][:rows] = spanning['number-rows-spanned']
+        end
+      end
+
       @formula[sheet] ||= {}
       if formula
         ['of:', 'oooc:'].each do |prefix|
@@ -501,92 +479,94 @@ module Roo
         col         = 1
         row         = 1
 
-        byebug
-        777=777
-
-        ws.children.each do |table_element|
-          case table_element.name
-          when 'table-column'
-            @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
-          when 'table-row'
-            if table_element.attributes['number-rows-repeated']
-              skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
-              row      = row + skip_row - 1
-            end
-            table_element.children.each do |cell|
-              skip_col   = attribute(cell, 'number-columns-repeated')
-              formula    = attribute(cell, 'formula')
-              value_type = attribute(cell, 'value-type')
-              v          = attribute(cell, 'value')
-              style_name = attribute(cell, 'style-name')
-              case value_type
-              when 'string'
-                str_v      = ''
-                # insert \n if there is more than one paragraph
-                para_count = 0
-                cell.children.each do |str|
-                  # begin comments
-                  #=begin
-                  #- <table:table-cell office:value-type="string">
-                  #  - <office:annotation office:display="true" draw:style-name="gr1" draw:text-style-name="P1" svg:width="1.1413in" svg:height="0.3902in" svg:x="2.0142in" svg:y="0in" draw:caption-point-x="-0.2402in" draw:caption-point-y="0.5661in">
-                  #      <dc:date>2011-09-20T00:00:00</dc:date>
-                  #      <text:p text:style-name="P1">Kommentar fuer B4</text:p>
-                  #    </office:annotation>
-                  #    <text:p>B4 (mit Kommentar)</text:p>
-                  #  </table:table-cell>
-                  #=end
-                  if str.name == 'annotation'
-                    str.children.each do |annotation|
-                      next unless annotation.name == 'p'
-                      # @comment ist ein Hash mit Sheet als Key (wie bei @cell)
-                      # innerhalb eines Elements besteht ein Eintrag aus einem
-                      # weiteren Hash mit Key [row,col] und dem eigentlichen
-                      # Kommentartext als Inhalt
-                      @comment[sheet]      = Hash.new unless @comment[sheet]
-                      key                  = [row, col]
-                      @comment[sheet][key] = annotation.text
-                    end
-                  end
-                  # end comments
-                  if str.name == 'p'
-                    v          = str.content
-                    str_v      += "\n" if para_count > 0
-                    para_count += 1
-                    if str.children.size > 1
-                      str_v += children_to_string(str.children)
-                    else
-                      str.children.each do |child|
-                        str_v += child.content #.text
-                      end
-                    end
-                    str_v.gsub!(/&apos;/, "'") # special case not supported by unescapeHTML
-                    str_v = CGI.unescapeHTML(str_v)
-                  end # == 'p'
-                end
-              when 'time'
-                cell.children.each do |str|
-                  v = str.content if str.name == 'p'
-                end
-              when '', nil, 'date', 'percentage', 'float'
-                #
-              when 'boolean'
-                v = attribute(cell, 'boolean-value').to_s
-              end
-              if skip_col
-                if !v.nil? || cell.attributes['date-value']
-                  0.upto(skip_col.to_i - 1) do |i|
-                    set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name)
-                  end
-                end
-                col += (skip_col.to_i - 1)
-              end # if skip
-              set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name)
-              col += 1
-            end
-            row += 1
-            col = 1
-          end
+        ws.css('table|table-column').each do |table_element|
+          @style_defaults[sheet] << table_element.attributes['default-cell-style-name']
         end
+
+        # table-row elements are not always children of table
+        ws.css('table|table-row').each do |table_element|
+          if table_element.attributes['number-rows-repeated']
+            skip_row = attribute(table_element, 'number-rows-repeated').to_s.to_i
+            row      = row + skip_row - 1
+          end
+          table_element.children.each do |cell|
+            skip_col   = attribute(cell, 'number-columns-repeated')
+            formula    = attribute(cell, 'formula')
+            value_type = attribute(cell, 'value-type')
+            v          = attribute(cell, 'value')
+            style_name = attribute(cell, 'style-name')
+            case value_type
+            when 'string'
+              str_v      = ''
+              # insert \n if there is more than one paragraph
+              para_count = 0
+              cell.children.each do |str|
+                # begin comments
+                #=begin
+                #- <table:table-cell office:value-type="string">
+                #  - <office:annotation office:display="true" draw:style-name="gr1" draw:text-style-name="P1" svg:width="1.1413in" svg:height="0.3902in" svg:x="2.0142in" svg:y="0in" draw:caption-point-x="-0.2402in" draw:caption-point-y="0.5661in">
+                #      <dc:date>2011-09-20T00:00:00</dc:date>
+                #      <text:p text:style-name="P1">Kommentar fuer B4</text:p>
+                #    </office:annotation>
+                #    <text:p>B4 (mit Kommentar)</text:p>
+                #  </table:table-cell>
+                #=end
+                if str.name == 'annotation'
+                  str.children.each do |annotation|
+                    next unless annotation.name == 'p'
+                    # @comment ist ein Hash mit Sheet als Key (wie bei @cell)
+                    # innerhalb eines Elements besteht ein Eintrag aus einem
+                    # weiteren Hash mit Key [row,col] und dem eigentlichen
+                    # Kommentartext als Inhalt
+                    @comment[sheet]      = Hash.new unless @comment[sheet]
+                    key                  = [row, col]
+                    @comment[sheet][key] = annotation.text
+                  end
+                end
+                # end comments
+                if str.name == 'p'
+                  v          = str.content
+                  str_v      += "\n" if para_count > 0
+                  para_count += 1
+                  if str.children.size > 1
+                    str_v += children_to_string(str.children)
+                  else
+                    str.children.each do |child|
+                      str_v += child.content #.text
+                    end
+                  end
+                  str_v.gsub!(/&apos;/, "'") # special case not supported by unescapeHTML
+                  str_v = CGI.unescapeHTML(str_v)
+                end # == 'p'
+              end
+            when 'time'
+              cell.children.each do |str|
+                v = str.content if str.name == 'p'
+              end
+            when '', nil, 'date', 'percentage', 'float'
+            #
+            when 'boolean'
+              v = attribute(cell, 'boolean-value').to_s
+            end
+
+            spanned_attributes = cell.attributes.keys.reject { |x| x.index('spanned').nil? }
+            spanning = spanned_attributes.collect{|sa| [sa,cell.attributes[sa].value]}.to_h
+
+            if skip_col
+              if !v.nil? || cell.attributes['date-value']
+                0.upto(skip_col.to_i - 1) do |i|
+                  set_cell_values(sheet, col, row, i, v, value_type, formula, cell, str_v, style_name, spanning)
+                end
+              end
+              col += (skip_col.to_i - 1)
+            end # if skip
+            set_cell_values(sheet, col, row, 0, v, value_type, formula, cell, str_v, style_name, spanning)
+            col += 1
+          end
+          row += 1
+          col = 1
+        end
+
       end
       doc.xpath("//*[local-name()='automatic-styles']").each do |style|
         read_styles(style)
