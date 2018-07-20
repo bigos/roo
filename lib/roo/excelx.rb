@@ -91,6 +91,9 @@ module Roo
         @spannings << spanning_data
       end
 
+      byebug
+      1==1
+
       if cell_max
         cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
         raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
