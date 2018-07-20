@@ -69,8 +69,25 @@ module Roo
                                @sheets[n] = Sheet.new(sheet_name, @shared, n, sheet_options)
                                [sheet_name, @sheets[n]]
                              end]
+      read_spanning_info
 
-      # read the information about cell spanning
+      if cell_max
+        cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
+        raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
+      end
+
+      super
+    rescue
+      self.class.finalize_tempdirs(object_id)
+      raise
+    end
+
+    def spannings()
+      @spannings[@sheet_names.find_index(@default_sheet)]
+    end
+
+    # read the information about cell spanning
+    def read_spanning_info
       @spannings = []
       @sheet_names.each_index do |n|
         spanning_data = {}
@@ -90,23 +107,6 @@ module Roo
         end
         @spannings << spanning_data
       end
-
-      byebug
-      1==1
-
-      if cell_max
-        cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
-        raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
-      end
-
-      super
-    rescue
-      self.class.finalize_tempdirs(object_id)
-      raise
-    end
-
-    def spannings()
-      @spannings[@sheet_names.find_index(@default_sheet)]
     end
 
     def method_missing(method, *args)
