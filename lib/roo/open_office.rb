@@ -18,9 +18,6 @@ module Roo
     # initialization and opening of a spreadsheet file
     # values for packed: :zip
     def initialize(filename, options = {})
-
-      # raise "going to debug out of desperation"
-
       packed       = options[:packed]
       file_warning = options[:file_warning] || :error
 
@@ -43,44 +40,6 @@ module Roo
           read_table_styles(style)
         end
       end
-
-      # accessing elements with xpath
-      # pp doc.xpath('/office:document-content/office:body/office:spreadsheet/table:table/table:table-column')[3]
-
-      # accessing elements using children
-      # pp doc.children[0].children[3].children[0].children[1].children[2]
-
-
-      # objects in spreadshet row 13
-      # pp doc.xpath('//table:table-row')[12]
-
-      # accessing third column of row 13
-      # pp doc.xpath('//table:table-row')[12].children[2]
-
-      # number of table rows
-      # pp doc.xpath('//table:table-row').size
-
-      # number of worksheet tabs
-      # pp doc.xpath('//table:table').size
-
-      # accessing table rows in the first tab - not tested yet
-      # pp doc.css('table|table')[0].css('table|table-row')[12]
-
-      # accessing thisrd visible column, hidden column is ignored
-      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[2]
-
-      # accessing text split over several nodes
-      # pp doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect(&:children)
-
-      # the best!!!
-      # pp  doc.css('table|table')[0].css('table|table-row')[12].css('table|table-cell')[0].css('text|p')[0..--1].collect{ |x| x.children.to_s }.join("\n")
-
-      # accessing colspannings ===================================
-      # aaa = OpenSheet.new OpenSheet.test_file
-      # aaa.workbook.sheets
-      # aaa.workbook.default_sheet = "Chain of Custody"
-      # aaa.workbook.entries
-      # aaa.workbook.cell_spanning['Chain of Custody'].assoc([1,3])
 
       @sheet_names = doc.xpath(XPATH_LOCAL_NAME_TABLE).map do |sheet|
         if !@only_visible_sheets || @table_display[attribute(sheet, 'style-name')]
