@@ -16,7 +16,6 @@ module Roo
         @rels = Relationships.new(rels_files[sheet_index])
         @comments = Comments.new(comments_files[sheet_index])
         @sheet = SheetDoc.new(sheet_files[sheet_index], @rels, shared, options)
-        @merge_cells = []
       end
 
       def cells
