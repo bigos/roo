@@ -372,6 +372,9 @@ class Roo::Base
   end
 
   def is_stream?(filename_or_stream)
+    byebug
+    1==1
+
     filename_or_stream.respond_to?(:seek)
   end
 
